@@ -1,0 +1,33 @@
+<core-dynamic-component [component]="allSectionsComponent" [data]="data" class="format-tiles">
+    <ng-container *ngFor="let section of sections">
+        <ion-item-divider color="light">
+            <core-format-text [text]="section.name"></core-format-text>
+             <!-- Section download. -->
+             <div *ngIf="section && downloadEnabled" class="core-button-spinner" float-end>
+                <!-- Download button. -->
+                <button *ngIf="section.showDownload && !section.isDownloading && !section.isCalculating" (click)="prefetch($event, section)" ion-button icon-only clear color="dark" [attr.aria-label]="'core.download' | translate">
+                    <ion-icon name="cloud-download"></ion-icon>
+                </button>
+                <!-- Refresh button. -->
+                <button *ngIf="section.showRefresh && !section.isDownloading && !section.isCalculating" (click)="prefetch($event, section)" ion-button icon-only clear color="dark" [attr.aria-label]="'core.refresh' | translate">
+                    <ion-icon name="refresh"></ion-icon>
+                </button>
+                <!-- Download progress. -->
+                <ion-badge class="core-course-download-section-progress" *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</ion-badge>
+                <!-- Spinner (downloading or calculating status). -->
+                <ion-spinner *ngIf="(section.isDownloading && section.total > 0) || section.isCalculating"></ion-spinner>
+            </div>
+        </ion-item-divider>
+
+        <ion-item text-wrap *ngIf="section.summary">
+            <core-format-text [text]="section.summary"></core-format-text>
+        </ion-item>
+
+        <ng-container *ngFor="let module of section.modules">
+            <ng-container *ngIf="module.visibleoncoursepage !== 0">
+                <core-course-module text-wrap [module]="module" [courseId]="course.id" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange($event)">
+                </core-course-module>
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</core-dynamic-component>
